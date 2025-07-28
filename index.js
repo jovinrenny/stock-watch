@@ -4,13 +4,30 @@ const input = document.getElementById("stockSymbol")
 const watchlist = document.getElementById("watchlist")
 const trackedSymbols = new Set()
 
+function saveTrackedSymbol() {
+    localStorage.setItem('trackedSymbols', JSON.stringify([...trackedSymbols]))
+}
+
+
 form.addEventListener('submit', async (e) => {
     e.preventDefault()
     const symbol = input.value.toUpperCase().trim()
     if(symbol && !trackedSymbols.has(symbol)) {
         trackedSymbols.add(symbol)
+        saveTrackedSymbol()
         await fetchStock(symbol)
         input.value = ''
+    }
+})
+
+window.addEventListener('DOMContentLoaded', async () => {
+    const saved = localStorage.getItem('trackedSymbols')
+    if(saved) {
+        const symbols = JSON.parse(saved)
+        symbols.forEach(symbol => {
+            trackedSymbols.add(symbol)
+            fetchStock(symbol)
+        })
     }
 })
 
